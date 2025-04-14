@@ -1,0 +1,85 @@
+.annexure-page {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.annexure-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Right-side hover overlay */
+.hover-overlay.right {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  /* background: rgba(44, 62, 80, 0.85); */
+  color: white;
+  display: flex;
+  /* align-items: center; */
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+
+.annexure-container:hover .hover-overlay.right {
+  opacity: 1;
+}
+
+.overlay-content {
+  /* text-align: center; */
+  padding: 20px;
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.annexure-container:hover .overlay-content {
+  transform: translateY(0);
+}
+
+.overlay-content h2 {
+  font-size: 2.7rem;
+  margin-bottom: 10px;
+  margin-top: 300px;
+  margin-right: 250px;
+}
+
+.overlay-content p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-left: 40px;
+}
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hover-overlay.right {
+    width: 100%;
+    height: 30%;
+    bottom: 0;
+    top: auto;
+  }
+
+  .overlay-content h2 {
+    font-size: 2rem;
+  }
+}

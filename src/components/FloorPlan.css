@@ -1,0 +1,398 @@
+.floor-plan-container {
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 60px); /* Adjust for navbar height */
+  margin-top: 60px; /* Space for fixed navbar */
+}
+
+.floor-header {
+  display: flex;
+  align-items: center;
+  margin-top: 19px;
+  gap: 20px;
+  margin-bottom: 30px;
+  padding: 0 20px;
+}
+
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+
+.back-button {
+  background: #2c3e50;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background: #000000;
+  transform: translateX(-3px);
+}
+
+/* Move icon next to student */
+.move-icon {
+  cursor: pointer;
+  margin-left: 10px;
+  transition: transform 0.2s ease;
+}
+
+.move-icon:hover {
+  color: #28a745;
+  /* background-color: #ccc; */
+  /* padding: 2px; */
+  /* border-radius: 5px; */
+  transform: rotate(360deg);
+}
+
+/* Move Modal Row */
+.move-student-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 20px 0;
+  font-size: 16px;
+}
+
+/* Student name display inside Move Modal */
+.student-name-display {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* Dropdown inside Move Modal */
+.move-student-row select {
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  flex: 1;
+}
+
+/* Confirm move button */
+.confirm-move-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.2s ease;
+}
+
+.confirm-move-btn:hover {
+  background-color: #0056b3;
+}
+
+.swap-option {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.swap-student-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.swap-section select {
+  padding: 6px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.swap-candidates {
+  margin-top: 12px;
+}
+
+.swap-student-option {
+  background-color: #f1f1f1;
+  padding: 8px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.swap-student-option.selected {
+  background-color: #cce5ff;
+  font-weight: bold;
+}
+
+
+
+.floor-title {
+  color: #2c3e50;
+  font-size: 2rem;
+  margin: 0;
+}
+
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 0 20px;
+}
+
+.room {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.room:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.room-header h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+
+.room-status {
+  font-size: 0.8rem;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.room.occupied .room-status {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.room.vacant .room-status {
+  background: #e8f5e9;
+  color: #388e3c;
+}
+
+.students {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Add these new styles to your existing CSS */
+
+/* .student-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f5f5f5;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #333;
+  transition: all 0.2s ease;
+  cursor: pointer;
+} */
+
+.student-name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f2f2f2;
+  /* font-size: 0.9rem; */
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border-radius: 5px;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.student-name-content {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  flex: 1;
+}
+
+.student-name-text {
+  margin-left: 8px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.move-icon-wrapper {
+  margin-left: auto;
+  color: #007bff;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.move-icon-wrapper:hover {
+  transform: scale(1.1);
+  color: #0056b3;
+}
+
+.student-name:hover {
+  background: #e0e0e0;
+  transform: translateX(2px);
+}
+
+.student-icon {
+  color: #4a6baf;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.student-modal {
+  background: white;
+  border-radius: 10px;
+  padding: 25px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+}
+
+/* .close-modal {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+  }
+  
+  .close-modal:hover {
+    color: #333;
+  } */
+
+.modal-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  text-align: center;
+  flex-grow: 1;
+}
+
+.close-modal {
+  background:none;
+  width: 40px;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  font-size: 20px;
+  transition: color 0.3s ease;
+  border-radius: 20%;
+}
+
+button:hover {
+    background: #ffffff;
+    transition: color 0.3s ease;
+  }
+
+.close-modal:hover {
+  color: #333;
+}
+
+.student-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #555;
+}
+
+.delete-student-btn {
+    background: #e74c3c;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+    transition: background 0.3s ease;
+}
+
+.delete-student-btn:hover {
+    background: #c0392b;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .student-modal {
+    width: 95%;
+    padding: 20px 15px;
+  }
+}

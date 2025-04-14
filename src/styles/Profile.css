@@ -1,0 +1,136 @@
+.profile-container {
+    width: 100%;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+  }
+
+.uploaded-img {
+  width: 130px; 
+  height: 150px; 
+  /* border-radius: 50%;  */
+  object-fit: cover; 
+  border: 3px solid #fff; 
+  position: absolute;
+  /* top: 0;
+  left: 0; */
+
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* margin-top: 5px; */
+}
+  
+  /* .profile-container h1 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #007bff;
+    display: inline-block;
+    padding-bottom: 5px;
+    margin-top: 150px;
+  }
+  
+  .profile-container p {
+    font-size: 18px;
+    color: #555;
+    margin: 10px 0;
+  } */
+  
+  /* .profile-container p strong {
+    color: #007bff;
+    font-size: 20px;
+  } */
+
+  .id-card {
+    width: 600px;
+    height: 375px;
+    background: url("../assets/images/idcard2.jpg") no-repeat center;
+    /* background-size: cover; */
+    background-size: 100% 100%;
+    border-radius: 10px;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    position: relative;
+    margin: 200px;
+
+  }
+  
+  .id-title {
+    text-align: top;
+    font-size: 14px;
+    font-weight: bold;
+    color: #003366;
+  }
+  
+  .user-details {
+    position: absolute;
+    top: 87px; /* Adjust according to the placement */
+    left: 316px; /* Adjust according to the placement */
+    font-size: 18px;
+    /* font-weight: bold; */
+    color: black;
+    line-height: 0.65;
+    text-align: left;
+}
+  .roll {
+    position: absolute;
+    top: 303.5px; /* Adjust according to the placement */
+    left: 175px; /* Adjust according to the placement */
+    font-size: 15px;
+    /* font-weight: bold; */
+    color: black;
+    /* line-height: 0.65; */
+    text-align: left;
+    font-family:  sans-serif;
+}
+
+/* From Uiverse.io by csemszepp */ 
+.custum-file-upload {
+    height: 101px;
+    width: 80px;
+    margin-left: 9.2px;
+    margin-top: 86px;
+    display: flex;
+    flex-direction: column;
+    align-items: space-between;
+    gap: 20px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed #e8e8e8;
+    background-color: #212121;
+    padding: 1.5rem;
+    border-radius: 1px;
+    box-shadow: 0px 48px 35px -48px #e8e8e8;
+  }
+  
+  .custum-file-upload .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+  }
+  
+  .custum-file-upload .icon svg {
+    height: 40px;
+    fill: #e8e8e8;
+  }
+  
+  .custum-file-upload .text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .custum-file-upload .text span {
+    font-weight: 200;
+    color: #e8e8e8;
+  }
+  
+  .custum-file-upload input {
+    display: none;
+  }
