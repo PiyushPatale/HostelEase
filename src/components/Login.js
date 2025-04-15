@@ -5,6 +5,8 @@ import bgImage from "../assets/images/bg.jpg";
 import styled from "styled-components";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+const { PUBLIC_SERVER_URL } = require("./api");
+const host=PUBLIC_SERVER_URL
 // import { showErrorToast, showSuccessToast } from "./toastUtils";
 
 const Login = ({ setUser }) => {
@@ -29,7 +31,7 @@ const Login = ({ setUser }) => {
   
     try {
       console.log("Sending Login Request:", { email, password });
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(`${host}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
