@@ -10,6 +10,10 @@ import { Modal } from "antd";
 import { Spin } from "antd";
 import { toast, ToastContainer } from "react-toastify";
 
+const { PUBLIC_SERVER_URL } = require("./api");
+
+const host=PUBLIC_SERVER_URL
+
 const FloorPlan = () => {
   const { floorNumber } = useParams();
   const navigate = useNavigate();
@@ -37,7 +41,7 @@ const FloorPlan = () => {
     const fetchRooms = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("http://localhost:5000/api/rooms");
+        const response = await axios.get(`${host}/api/rooms`);
         const allRooms = response.data;
 
         let filteredRooms = [];
@@ -93,7 +97,7 @@ const FloorPlan = () => {
 
     setLoading(true);
     try {
-      await axios.delete(`http://localhost:5000/api/students/${studentId}`);
+      await axios.delete(`${host}/students/${studentId}`);
       setRooms((prevRooms) =>
         prevRooms.map((room) => ({
           ...room,
@@ -118,7 +122,7 @@ const FloorPlan = () => {
     setSelectedRoomForMove("");
 
     try {
-      const response = await axios.get("http://localhost:5000/api/rooms");
+      const response = await axios.get(`${host}/api/rooms`);
       const allRooms = response.data;
 
       // const available = allRooms.filter(
@@ -164,14 +168,14 @@ const FloorPlan = () => {
 
     try {
       await axios.put(
-        `http://localhost:5000/api/students/move/${studentToMove._id}`,
+        `${host}/api/students/move/${studentToMove._id}`,
         {
           newRoomNumber: selectedRoomForMove,
         }
       );
 
       // Refresh room data
-      const response = await axios.get("http://localhost:5000/api/rooms");
+      const response = await axios.get(`${host}/api/rooms`);
       const allRooms = response.data;
       const filtered = allRooms.filter(
         (room) => Math.floor(room.roomNumber / 100) === parseInt(floorNumber)
@@ -193,7 +197,7 @@ const FloorPlan = () => {
     setStudentToSwapWith(null);
 
     try {
-      const response = await axios.get("http://localhost:5000/api/rooms");
+      const response = await axios.get(`${host}/api/rooms`);
       const allRooms = response.data;
 
       const isGirl = studentToMove.roomNumber.startsWith("G");
@@ -235,7 +239,7 @@ const FloorPlan = () => {
     }
 
     try {
-      await axios.put(`http://localhost:5000/api/students/swap`, {
+      await axios.put(`${host}/api/students/swap`, {
         studentAId: studentToMove._id,
         studentBId: studentToSwapWith._id,
       });
@@ -243,7 +247,7 @@ const FloorPlan = () => {
       toast.success("Students swapped successfully!");
 
       // Refresh room data
-      const response = await axios.get("http://localhost:5000/api/rooms");
+      const response = await axios.get(`${host}/api/rooms`);
       const filtered = response.data.filter(
         (room) => Math.floor(room.roomNumber / 100) === parseInt(floorNumber)
       );

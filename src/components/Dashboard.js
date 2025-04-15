@@ -3,6 +3,10 @@ import "../styles/dashboard.css";
 import { FiArrowLeft } from "react-icons/fi";
 import { Navigate } from "react-router-dom";
 
+const { PUBLIC_SERVER_URL } = require("./api");
+
+const host=PUBLIC_SERVER_URL
+
 const Dashboard = () => {
   const [showStudents, setShowStudents] = useState(false);
   const [students, setStudents] = useState([]);
@@ -17,7 +21,7 @@ const Dashboard = () => {
   const fetchStudents = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/api/users");
+      const response = await fetch(`${host}/api/users`);
       const data = await response.json();
       const filteredStudents = data.filter((user) => !user.isAdmin);
       setStudents(filteredStudents);
@@ -94,7 +98,7 @@ const Dashboard = () => {
     formData.append("file", file);
   
     try {
-      const response = await fetch("http://localhost:5000/api/auth/signup-csv", {
+      const response = await fetch(`${host}api/auth/signup-csv`, {
         method: "POST",
         body: formData,
       });

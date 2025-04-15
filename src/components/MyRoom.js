@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/MyRoom.css";
+const { PUBLIC_SERVER_URL } = require("./api");
+
+const host=PUBLIC_SERVER_URL
 
 const MyRoom = () => {
   const navigate = useNavigate();
@@ -20,7 +23,7 @@ const MyRoom = () => {
           return;
         }
 
-        const response = await fetch("http://localhost:5000/api/users/my-room", {
+        const response = await fetch(`${host}/api/users/my-room`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"

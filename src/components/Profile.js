@@ -48,7 +48,7 @@ const Profile = () => {
     try {
       const userId = user?.id || user?._id;
       const response = await fetch(
-        `http://localhost:5000/api/users/upload/${userId}`,
+        `${host}/api/users/upload/${userId}`,
         {
           method: "POST",
           body: formData,

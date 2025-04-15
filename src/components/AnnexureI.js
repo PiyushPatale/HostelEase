@@ -1,30 +1,3 @@
-// import React from "react";
-// import { useNavigate } from "react-router-dom";
-// import annexureBg from "../assets/images/Annexure-I.png";
-// import "../styles/Annexure.css"; // We'll write some hover styles
-
-// const AnnexureI = () => {
-//   const navigate = useNavigate();
-
-//   const handleNavigate = () => {
-//     navigate("/floor/A"); // Or whatever floor number or identifier you use
-//   };
-
-//   return (
-//     <div
-//       className="annexure-container"
-//       style={{ backgroundImage: `url(${annexureBg})` }}
-//       onClick={handleNavigate}
-//     >
-//       <div className="hover-overlay">
-//         <h2>Go to Annexure A</h2>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default AnnexureI;
-
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import annexureBg from "../assets/images/Annexure-I.png";

@@ -5,6 +5,10 @@ import axios from "axios";
 import { Spin } from "antd";
 import "../styles/Loggedinhome.css";
 
+const { PUBLIC_SERVER_URL } = require("./api");
+
+const host=PUBLIC_SERVER_URL
+
 const LoggedInHome = ({ user }) => {
   const navigate = useNavigate();
   const [hostelStats, setHostelStats] = useState({
@@ -55,8 +59,8 @@ const LoggedInHome = ({ user }) => {
   const fetchRoomData = async () => {
     try {
       const [vacantRes, occupiedRes] = await Promise.all([
-        axios.get("http://localhost:5000/api/rooms/vacant"),
-        axios.get("http://localhost:5000/api/rooms/occupied"),
+        axios.get(`${host}/api/rooms/vacant`),
+        axios.get(`${host}/api/rooms/occupied`),
       ]);
 
       const allRooms = [...vacantRes.data, ...occupiedRes.data];

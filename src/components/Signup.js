@@ -4,6 +4,9 @@ import "../styles/signup.css";
 import styled from 'styled-components';
 import { toast, ToastContainer } from "react-toastify";
 import signupBg from "../assets/images/signup-bg.jpg"
+const { PUBLIC_SERVER_URL } = require("./api");
+
+const host=PUBLIC_SERVER_URL
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -57,7 +60,7 @@ const Signup = () => {
     if (!validateForm()) return;
     
     try {
-      const response = await fetch("http://localhost:5000/api/auth/signup", {
+      const response = await fetch(`${host}/api/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
