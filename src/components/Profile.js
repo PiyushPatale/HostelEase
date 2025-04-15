@@ -7,6 +7,10 @@ import "react-toastify/dist/ReactToastify.css";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
 
+const { PUBLIC_SERVER_URL } = require("./api");
+
+const host=PUBLIC_SERVER_URL
+
 const Profile = () => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [image, setImage] = useState(user?.profileImage || "");
