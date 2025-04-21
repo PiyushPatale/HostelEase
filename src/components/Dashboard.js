@@ -4,8 +4,7 @@ import { FiArrowLeft } from "react-icons/fi";
 import { Navigate } from "react-router-dom";
 
 const { PUBLIC_SERVER_URL } = require("./api");
-
-const host=PUBLIC_SERVER_URL
+const host = PUBLIC_SERVER_URL;
 
 const Dashboard = () => {
   const [showStudents, setShowStudents] = useState(false);
@@ -14,7 +13,8 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedYear, setSelectedYear] = useState(""); // For year filter
+  const [selectedYear, setSelectedYear] = useState("");
+  const [showUnallotted, setShowUnallotted] = useState(false);
 
   const studentsPerPage = 10;
 
@@ -32,6 +32,19 @@ const Dashboard = () => {
     setLoading(false);
   };
 
+  const fetchUnallottedStudents = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${host}/api/students/unallotted`);
+      const data = await response.json();
+      setStudents(data);
+      setFilteredStudents(data);
+    } catch (error) {
+      console.error("Error fetching unallotted students:", error);
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
     let filtered = students;
 
@@ -45,7 +58,7 @@ const Dashboard = () => {
       );
     }
 
-    if (selectedYear) {
+    if (!showUnallotted && selectedYear) {
       filtered = filtered.filter(
         (student) =>
           student.rollNumber && student.rollNumber.startsWith(selectedYear)
@@ -54,38 +67,18 @@ const Dashboard = () => {
 
     setFilteredStudents(filtered);
     setCurrentPage(1);
-  }, [searchTerm, selectedYear, students]);
-
-  useEffect(() => {
-    if (searchTerm) {
-      const filtered = students.filter(
-        (student) =>
-          student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (student.roomNumber &&
-            student.roomNumber.toString().includes(searchTerm))
-      );
-      setFilteredStudents(filtered);
-      setCurrentPage(1);
-    } else {
-      setFilteredStudents(students);
-    }
-  }, [searchTerm, students]);
+  }, [searchTerm, selectedYear, students, showUnallotted]);
 
   const handleViewStudents = () => {
     if (!showStudents) {
-      fetchStudents();
+      showUnallotted ? fetchUnallottedStudents() : fetchStudents();
     }
     setShowStudents(!showStudents);
   };
 
-  // Pagination logic
   const indexOfLastStudent = currentPage * studentsPerPage;
   const indexOfFirstStudent = indexOfLastStudent - studentsPerPage;
-  const currentStudents = filteredStudents.slice(
-    indexOfFirstStudent,
-    indexOfLastStudent
-  );
+  const currentStudents = filteredStudents.slice(indexOfFirstStudent, indexOfLastStudent);
   const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -93,18 +86,18 @@ const Dashboard = () => {
   const handleCSVUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
-  
+
     const formData = new FormData();
     formData.append("file", file);
-  
+
     try {
       const response = await fetch(`${host}api/auth/signup-csv`, {
         method: "POST",
         body: formData,
       });
-  
+
       const text = await response.text();
-  
+
       try {
         const result = JSON.parse(text);
         if (response.ok) {
@@ -122,7 +115,6 @@ const Dashboard = () => {
       alert("Upload failed. Please try again.");
     }
   };
-  
 
   return (
     <div className="dashboard">
@@ -148,6 +140,7 @@ const Dashboard = () => {
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
                 className="year-filter"
+                disabled={showUnallotted}
               >
                 <option value="">All Years</option>
                 <option value="21">2021</option>
@@ -155,54 +148,44 @@ const Dashboard = () => {
                 <option value="23">2023</option>
                 <option value="24">2024</option>
               </select>
+
+              <label className="unallotted-filter">
+                <input
+                  type="checkbox"
+                  checked={showUnallotted}
+                  onChange={(e) => {
+                    setShowUnallotted(e.target.checked);
+                    if (e.target.checked) {
+                      fetchUnallottedStudents();
+                    } else {
+                      fetchStudents();
+                    }
+                  }}
+                />
+                Unallotted 
+              </label>
             </div>
 
             <div className="students-list">
               <h2>Student Details</h2>
               {loading ? (
-                <p>Loading students...</p>
+                <p className="loading-text">Loading students...</p>
               ) : (
                 <>
+                  <p className="result-count">
+                    {filteredStudents.length} student{filteredStudents.length !== 1 ? "s" : ""} found.
+                  </p>
+
                   {currentStudents.length > 0 ? (
                     <>
                       <ul>
                         {currentStudents.map((student) => (
                           <li key={student.id}>
-                            <strong>{student.name}</strong> - {student.email} -
-                            Room: {student.roomNumber || "N/A"}
+                            <strong>{student.name}</strong> - {student.rollNumber} - {student.email} - Room: {student.roomNumber || "N/A"}
                           </li>
                         ))}
                       </ul>
 
-                      {/* {filteredStudents.length > studentsPerPage && (
-                        <div className="pagination">
-                          <button
-                            onClick={() => paginate(currentPage - 1)}
-                            disabled={currentPage === 1}
-                            className="pagination-button"
-                          >
-                            &laquo; Prev
-                          </button>
-                          {Array.from({ length: totalPages }, (_, i) => (
-                            <button
-                              key={i}
-                              onClick={() => paginate(i + 1)}
-                              className={`pagination-button ${
-                                currentPage === i + 1 ? "active" : ""
-                              }`}
-                            >
-                              {i + 1}
-                            </button>
-                          ))}
-                          <button
-                            onClick={() => paginate(currentPage + 1)}
-                            disabled={currentPage === totalPages}
-                            className="pagination-button"
-                          >
-                            Next &raquo;
-                          </button>
-                        </div>
-                      )} */}
                       {filteredStudents.length > studentsPerPage && (
                         <div className="pagination">
                           <button
@@ -276,7 +259,7 @@ const Dashboard = () => {
           </div>
         )}
       </div>
-      {/* Floating CSV Upload Button */}
+
       <div className="csv-upload-float">
         <input
           type="file"

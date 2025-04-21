@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import toast, { Toaster } from 'react-hot-toast';
 import axios from "axios";
 import { Spin } from "antd";
 import "../styles/Loggedinhome.css";
@@ -212,6 +212,7 @@ const LoggedInHome = ({ user }) => {
 
   return (
     <div className="loggedin-home">
+      <Toaster position="top-center" reverseOrder={false} /> 
       <div className="dashboard-layout">
         {/* Left Panel */}
         <div className="left-panel">
@@ -314,36 +315,6 @@ const LoggedInHome = ({ user }) => {
           </div>
         </div>
       </div>
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-        toastStyle={{
-          borderRadius: '8px',
-          padding: '16px',
-          marginBottom: '10px',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-          minHeight: '60px',
-          display: 'flex',
-          alignItems: 'center',
-        }}
-        closeButtonStyle={{
-          alignSelf: 'center',
-          color: 'white',
-          marginLeft: '16px',
-        }}
-        progressStyle={{
-          background: 'rgba(255, 255, 255, 0.3)',
-          height: '3px',
-        }}
-      />
     </div>
   );
 };

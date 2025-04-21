@@ -47,6 +47,72 @@
   transform: translateX(-3px);
 }
 
+/* .custom-toast {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.custom-toast[data-leaving="true"] {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.custom-toast h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  color: #333;
+}
+
+.custom-toast p {
+  margin: 0 0 15px;
+  font-size: 14px;
+  color: #555;
+}
+
+.toast-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.cancel-btn,
+.delete-btn {
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.3s ease;
+}
+
+.cancel-btn {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.cancel-btn:hover {
+  background-color: #d5d5d5;
+}
+
+.delete-btn {
+  background-color: #e53935;
+  color: #fff;
+}
+
+.delete-btn:hover {
+  background-color: #c62828;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+} */
+
 /* Move icon next to student */
 .move-icon {
   cursor: pointer;

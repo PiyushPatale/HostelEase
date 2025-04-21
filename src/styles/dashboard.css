@@ -104,6 +104,21 @@
   overflow-y: auto;
 }
 
+/* Hide scrollbar in Chrome, Edge, Safari */
+.students-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar in Firefox */
+.students-list {
+  scrollbar-width: none;
+}
+
+/* Hide scrollbar in IE/Edge Legacy */
+.students-list {
+  -ms-overflow-style: none;
+}
+
 .students-list ul {
   list-style: none;
   padding: 0;

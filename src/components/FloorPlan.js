@@ -6,9 +6,10 @@ import "./FloorPlan.css";
 import { LuShuffle } from "react-icons/lu";
 // import { ClipLoader } from "react-spinners"; // Loader
 import { Modal } from "antd";
+import "./ConfirmDialog.css";  
 
 import { Spin } from "antd";
-import { toast, ToastContainer } from "react-toastify";
+import toast, { Toaster } from 'react-hot-toast';
 
 const { PUBLIC_SERVER_URL } = require("./api");
 
@@ -88,33 +89,61 @@ const FloorPlan = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    toast.dismiss();
     setSelectedStudent(null);
   };
 
-  const handleDeleteStudent = async (studentId) => {
-    if (!window.confirm("Are you sure you want to delete this student?"))
-      return;
-
-    setLoading(true);
-    try {
-      await axios.delete(`${host}/students/${studentId}`);
-      setRooms((prevRooms) =>
-        prevRooms.map((room) => ({
-          ...room,
-          students: room.students.filter(
-            (student) => student._id !== studentId
-          ),
-        }))
-      );
-      toast.success("Student deleted successfully");
-      closeModal();
-    } catch (error) {
-      console.error("Error deleting student:", error);
-      toast.error("Failed to delete student");
-    } finally {
-      setLoading(false);
-    }
+  const ConfirmDialog = ({ message, onConfirm }) => {
+    return toast.custom((t) => (
+      <div className={`custom-toast ${t.visible ? 'show' : ''}`}>
+        <h3>Are you sure?</h3>
+        <p>{message}</p>
+        <div className="toast-buttons">
+          <button className="cancel-btn" onClick={() => toast.dismiss(t.id)}>
+            Cancel
+          </button>
+          <button
+            className="delete-btn"
+            onClick={async () => {
+              toast.dismiss(t.id);    // close dialog immediately
+              await onConfirm();      // run passed function
+            }}
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    ));
   };
+
+  const handleDeleteStudent = (studentId) => {
+    ConfirmDialog({
+      message: "Do you want to delete this student?",
+      onConfirm: async () => {
+        setLoading(true);
+        try {
+          await axios.delete(`${host}/api/students/${studentId}`);
+          setRooms((prevRooms) =>
+            prevRooms.map((room) => ({
+              ...room,
+              students: room.students.filter(
+                (student) => student._id !== studentId
+              ),
+            }))
+          );
+          toast.success("Student deleted successfully");
+          closeModal();
+        } catch (error) {
+          console.error("Error deleting student:", error);
+          toast.error("Failed to delete student");
+        } finally {
+          setLoading(false);
+        }
+      }
+    });
+  };
+  
+  
 
   const handleOpenMoveModal = async (student) => {
     setIsVacantLoading(true);
@@ -184,9 +213,13 @@ const FloorPlan = () => {
 
       setIsMoveModalOpen(false);
       setStudentToMove(null);
+      console.log(studentToMove.name);
+      console.log(selectedRoomForMove);
+      
+      toast.success(`${studentToMove.name} moved to Room ${selectedRoomForMove}`);
     } catch (err) {
       console.error("Move failed:", err);
-      alert("Couldn't move student.");
+      toast.error("Failed to move student");
     }
   };
 
@@ -286,6 +319,7 @@ const FloorPlan = () => {
 
   return (
     <div className="floor-plan-container">
+      <Toaster position="top-center" reverseOrder={false} /> 
       {loading && (
         <div className="loader-overlay">
           <Spin tip="Loading..." size="large" />
@@ -314,22 +348,6 @@ const FloorPlan = () => {
             </div>
             <div className="students">
               {room.students.map((student) => (
-                // <div key={student._id} className="student-name">
-                //   <div onClick={() => handleStudentClick(student)}>
-                //     <FiUser className="student-icon" />
-                //     <span>{student.name}</span>
-                //   </div>
-                //   <FiRepeat
-                //     className="move-icon"
-                //     title="Move Student"
-                //     onClick={() => handleOpenMoveModal(student)}
-                //     style={{
-                //       cursor: "pointer",
-                //       marginLeft: "8px",
-                //       color: "#007bff",
-                //     }}
-                //   />
-                // </div>
                 <div key={student._id} className="student-name">
                   <div
                     className="student-name-content"
@@ -508,23 +526,6 @@ const FloorPlan = () => {
           </div>
         </div>
       )}
-
-      {/* <ToastContainer position="top-right" autoClose={3000} hideProgressBar /> */}
-      <ToastContainer
-              position="top-center"
-              autoClose={3000}
-              hideProgressBar={false}
-              newestOnTop
-              closeOnClick
-              pauseOnHover
-              draggable
-              theme="colored"
-              toastStyle={{
-                borderRadius: '8px',
-                padding: '16px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-              }}
-            />
     </div>
   );
 };

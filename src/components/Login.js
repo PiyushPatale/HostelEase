@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/login.css";
 import bgImage from "../assets/images/bg.jpg";
 import styled from "styled-components";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import toast, { Toaster } from 'react-hot-toast';
 const { PUBLIC_SERVER_URL } = require("./api");
 const host=PUBLIC_SERVER_URL
 // import { showErrorToast, showSuccessToast } from "./toastUtils";
@@ -29,41 +28,48 @@ const Login = ({ setUser }) => {
     return;
   }
   
-    try {
-      console.log("Sending Login Request:", { email, password });
-      const response = await fetch(`${host}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
+  try {
+    const loginPromise = fetch(`${host}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    }).then(async response => {
       const data = await response.json();
-      console.log(data);
-
-      if (response.ok && data.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("showLoginSuccess", "true");
-        toast.success("Login successful!");
-        console.log(data.user);
-        console.log(data.token);
-        
-        // showSuccessToast("Login successful!");
-        setUser(data.user);
-          if (data.redirectTo) {
-            console.log("1");
-            navigate("/adminprofile");
-          } else {
-            console.log("2");
-            navigate("/home");
-          }
-      }else {
-        toast.error(data.message || "Invalid credentials");
+      if (!response.ok || !data.user) {
+        throw new Error(data.message || "Invalid credentials");
       }
-    } catch (error) {
-      toast.error("Login failed. Please try again.");     
-      // showErrorToast("Login failed. Please try again.");
+      return data;
+    });
+  
+    const data = await toast.promise(
+      loginPromise,
+      {
+        loading: "Logging in...",
+        success: "Login successful!",
+        error: (err) => err.message || "Login failed",
+      },
+      { position: "top-center" }
+    );
+  
+    // If success
+    localStorage.setItem("user", JSON.stringify(data.user));
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("showLoginSuccess", "true");
+    setUser(data.user);
+  
+    if (data.redirectTo) {
+      navigate("/adminprofile");
+    } else {
+      navigate("/home");
     }
+  
+  } catch (error) {
+    console.error(error);
+  } 
+  // catch (error) {
+  //     toast.error("Login failed. Please try again.");     
+  //     // showErrorToast("Login failed. Please try again.");
+  //   }
   };
 
   return (
@@ -73,6 +79,7 @@ const Login = ({ setUser }) => {
         className="login-container"
         style={{ backgroundImage: `url(${bgImage})` }}
       >
+        <Toaster position="top-center" reverseOrder={false} /> 
         <div className="login-box">
           <h2>LOGIN</h2>
           <form onSubmit={handleLogin}>
@@ -109,37 +116,6 @@ const Login = ({ setUser }) => {
             <button type="submit">Login</button>
           </form>
         </div>
-
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-          toastStyle={{
-            borderRadius: '8px',
-            padding: '16px',
-            marginBottom: '10px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-            minHeight: '60px',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-          closeButtonStyle={{
-            alignSelf: 'self-end',
-            color: 'white',
-            marginLeft: '16px',
-          }}
-          progressStyle={{
-            background: 'rgba(255, 255, 255, 0.3)',
-            height: '3px',
-          }}
-        />
       </div>
     </>
   );

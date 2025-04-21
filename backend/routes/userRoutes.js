@@ -39,37 +39,70 @@ console.log(process.env.API_SECRET);
 //   }
 // });
 
+// router.post("/upload/:userId", upload.single("image"), async (req, res) => {
+//   try {
+//     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+
+//     console.log("File received:", req.file);
+
+//     const result = await cloudinary.uploader
+//       .upload_stream({ resource_type: "image" }, async (error, result) => {
+//         if (error) {
+//           console.error("Cloudinary Error:", error);
+//           return res.status(500).json({ error: "Cloudinary upload failed" });
+//         }
+
+//         console.log("Cloudinary response:", result);
+//         const user = await User.findByIdAndUpdate(
+//           req.params.userId,
+//           { profileImage: result.secure_url },
+//           { new: true }
+//         );
+
+//         console.log("Updated user:", user);
+//         res.json({ imageUrl: user.profileImage });
+//       })
+//       .end(req.file.buffer);
+
+//     // result.end(req.file.buffer); // Upload buffer directly
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Image upload failed" });
+//   }
+// });
+
 router.post("/upload/:userId", upload.single("image"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
-    console.log("File received:", req.file);
-
-    const result = await cloudinary.uploader
-      .upload_stream({ resource_type: "image" }, async (error, result) => {
-        if (error) {
-          console.error("Cloudinary Error:", error);
-          return res.status(500).json({ error: "Cloudinary upload failed" });
-        }
-
-        console.log("Cloudinary response:", result);
-        const user = await User.findByIdAndUpdate(
-          req.params.userId,
-          { profileImage: result.secure_url },
-          { new: true }
+    const streamUpload = (buffer) => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { resource_type: "image" },
+          (error, result) => {
+            if (result) resolve(result);
+            else reject(error);
+          }
         );
+        stream.end(buffer);
+      });
+    };
 
-        console.log("Updated user:", user);
-        res.json({ imageUrl: user.profileImage });
-      })
-      .end(req.file.buffer);
+    const result = await streamUpload(req.file.buffer);
 
-    // result.end(req.file.buffer); // Upload buffer directly
+    const user = await User.findByIdAndUpdate(
+      req.params.userId,
+      { profileImage: result.secure_url },
+      { new: true }
+    );
+
+    res.json({ imageUrl: user.profileImage });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Image upload failed" });
   }
 });
+
 
 // GET /api/users/my-room/:userId
 router.post("/my-room", async (req, res) => {
@@ -159,16 +192,17 @@ function getOrdinalSuffix(num) {
 router.get("/image/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
-    if (!user || !user.profileImage)
+    if (!user || !user.profileImage) {
       return res.status(404).json({ error: "Image not found" });
+    }
 
-    res.set("Content-Type", user.profileImage.contentType);
-    res.send(user.profileImage.data);
+    res.json({ imageUrl: user.profileImage });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch image" });
   }
 });
+
 
 router.get("/", async (req, res) => {
   try {

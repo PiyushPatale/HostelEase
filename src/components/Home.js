@@ -3,13 +3,17 @@ import { Link, useNavigate } from "react-router-dom";
 import "../styles/home.css";
 import bgImage from "../assets/images/home-bg.jpg";
 import logo from "../assets/images/iiitg-logo.png";
-import { toast, ToastContainer } from "react-toastify";
+import toast, { Toaster } from 'react-hot-toast';
 
 const Home = () => {
   const navigate = useNavigate();
 
   const handleExplore = () => {
     const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) {
+      toast.error("Please login first!");
+      return;
+    }
 
     if (user?.email === "admin@iiitg.ac.in") {
       navigate("/adminprofile");
@@ -33,6 +37,7 @@ const Home = () => {
       className="home-container"
       style={{ backgroundImage: `url(${bgImage})` }}
     >
+      <Toaster position="top-center" reverseOrder={false} /> 
       {/* Info Section */}
       <div className="info-box">
         <h2>Welcome to IIIT Guwahati Hostel Management</h2>

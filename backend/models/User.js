@@ -8,10 +8,7 @@ const userSchema = new mongoose.Schema({
   mobileNumber: { type: String, required: true },
   rollNumber: { type: String, required: true },
   isAdmin: { type: Boolean, default: false },
-  profileImage: {
-    data: Buffer,  // Store image as binary
-    contentType: String, // Store image type (e.g., image/png, image/jpeg)
-  },
+  profileImage: { type: String },
 });
 
 module.exports = mongoose.model("User", userSchema);
