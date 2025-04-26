@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/AdminProfile.css";
-import FloatingNavbar from "./FloatingNavbar";
 import { FaUser, FaTachometerAlt, FaBuilding, FaCog, FaChevronDown, FaChevronUp, FaMale, FaFemale, FaIdCard, FaEnvelope, FaShieldAlt, FaCalendarAlt } from "react-icons/fa";
 
 const AdminProfile = () => {

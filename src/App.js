@@ -29,7 +29,7 @@ function App() {
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem("user");
-      console.log(storedUser);
+      // console.log(storedUser);
 
       if (storedUser) {
         setUser(JSON.parse(storedUser));

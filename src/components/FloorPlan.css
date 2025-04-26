@@ -436,6 +436,21 @@ button:hover {
   color: #555;
 }
 
+.remove-student-btn {
+  margin-top: 10px;
+  background-color: #ffa500; /* Orange */
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.remove-student-btn:hover {
+  background-color: #ff8c00;
+}
+
+
 .delete-student-btn {
     background: #e74c3c;
     color: white;

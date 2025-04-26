@@ -4,12 +4,11 @@ import { FiArrowLeft, FiUser, FiX, FiRepeat } from "react-icons/fi";
 import axios from "axios";
 import "./FloorPlan.css";
 import { LuShuffle } from "react-icons/lu";
-// import { ClipLoader } from "react-spinners"; // Loader
-import { Modal } from "antd";
 import "./ConfirmDialog.css";  
 
 import { Spin } from "antd";
 import toast, { Toaster } from 'react-hot-toast';
+import { showConfirmDialog } from "./ConfirmDialog";
 
 const { PUBLIC_SERVER_URL } = require("./api");
 
@@ -93,56 +92,97 @@ const FloorPlan = () => {
     setSelectedStudent(null);
   };
 
-  const ConfirmDialog = ({ message, onConfirm }) => {
-    return toast.custom((t) => (
-      <div className={`custom-toast ${t.visible ? 'show' : ''}`}>
-        <h3>Are you sure?</h3>
-        <p>{message}</p>
-        <div className="toast-buttons">
-          <button className="cancel-btn" onClick={() => toast.dismiss(t.id)}>
-            Cancel
-          </button>
-          <button
-            className="delete-btn"
-            onClick={async () => {
-              toast.dismiss(t.id);    // close dialog immediately
-              await onConfirm();      // run passed function
-            }}
-          >
-            Confirm
-          </button>
-        </div>
-      </div>
-    ));
-  };
+  const handleRemoveFromRoom = async (roomNumber, rollNumber) => {
+    try {
+      setLoading(true);
 
-  const handleDeleteStudent = (studentId) => {
-    ConfirmDialog({
-      message: "Do you want to delete this student?",
-      onConfirm: async () => {
-        setLoading(true);
-        try {
-          await axios.delete(`${host}/api/students/${studentId}`);
-          setRooms((prevRooms) =>
-            prevRooms.map((room) => ({
-              ...room,
-              students: room.students.filter(
-                (student) => student._id !== studentId
-              ),
-            }))
-          );
-          toast.success("Student deleted successfully");
-          closeModal();
-        } catch (error) {
-          console.error("Error deleting student:", error);
-          toast.error("Failed to delete student");
-        } finally {
-          setLoading(false);
-        }
+      const token = localStorage.getItem("token");
+  
+      const response = await axios.put(`${host}/api/rooms/remove`, {
+        roomNumber,
+        rollNumber,
+      },{
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    });
+    );
+  
+      console.log("Remove response:", response.data);
+  
+      
+      // After removal, you can update UI as needed (optional)
+      setRooms((prevRooms) =>
+        prevRooms.map((room) =>
+          room.roomNumber === roomNumber
+      ? { ...room, students: room.students.filter(student => student.rollNumber !== rollNumber) }
+      : room
+    )
+  );
+  
+  closeModal();
+  toast.success(`${selectedStudent.name} removed from room ${selectedStudent.roomNumber} successfully`);
+    } catch (error) {
+      console.error("Error removing student from room:", error);
+      toast.error("Failed to remove student from room");
+    } finally {
+      setLoading(false);
+    }
   };
   
+
+  
+  // const handleDeleteStudent = async (studentId) => {
+  //   console.log("Deleting student directly without confirm...");
+  
+  //   setLoading(true);
+  //   try {
+  //     console.log(`${host}/api/students/${studentId}`);
+  //     await axios.delete(`${host}/api/students/${studentId}`);
+  //     setRooms((prevRooms) =>
+  //       prevRooms.map((room) => ({
+  //         ...room,
+  //         students: room.students.filter(
+  //           (student) => student._id !== studentId
+  //         ),
+  //       }))
+  //     );
+  //     toast.success("Student deleted successfully");
+  //     closeModal();
+  //   } catch (error) {
+  //     console.error("Error deleting student:", error);
+  //     alert("Error deleting student: " + error.message);
+  //     toast.error("Failed to delete student");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  
+  const handleDeleteStudent = async (studentId, studentName) => {
+    if (!window.confirm("Are you sure you want to delete this student?"))
+      return;
+
+    setLoading(true);
+    try {
+      await axios.delete(`${host}/api/students/${studentId}`);
+      setRooms((prevRooms) =>
+        prevRooms.map((room) => ({
+          ...room,
+          students: room.students.filter(
+            (student) => student._id !== studentId
+          ),
+        }))
+      );
+
+      closeModal();
+      toast.success(`Student ${studentName} deleted successfully!`);
+    } catch (error) {
+      console.error("Error deleting student:", error);
+      toast.error("Failed to delete student");
+    } finally {
+      setLoading(false);
+    }
+  };
   
 
   const handleOpenMoveModal = async (student) => {
@@ -193,7 +233,7 @@ const FloorPlan = () => {
       return;
     }
 
-    console.log(selectedRoomForMove);
+    // console.log(selectedRoomForMove);
 
     try {
       await axios.put(
@@ -213,8 +253,8 @@ const FloorPlan = () => {
 
       setIsMoveModalOpen(false);
       setStudentToMove(null);
-      console.log(studentToMove.name);
-      console.log(selectedRoomForMove);
+      // console.log(studentToMove.name);
+      // console.log(selectedRoomForMove);
       
       toast.success(`${studentToMove.name} moved to Room ${selectedRoomForMove}`);
     } catch (err) {
@@ -410,12 +450,21 @@ const FloorPlan = () => {
             </div>
 
             {isAdmin && (
-              <button
-                className="delete-student-btn"
-                onClick={() => handleDeleteStudent(selectedStudent._id)}
-              >
-                Delete this student
-              </button>
+              <>
+                <button
+                  className="remove-student-btn"
+                  onClick={() => handleRemoveFromRoom(selectedStudent.roomNumber, selectedStudent.rollNumber)}
+                >
+                  Remove from Room
+                </button>
+            
+                <button
+                  className="delete-student-btn"
+                  onClick={() => handleDeleteStudent(selectedStudent._id, selectedStudent.name)}
+                >
+                  Delete this student
+                </button>
+              </>
             )}
           </div>
         </div>

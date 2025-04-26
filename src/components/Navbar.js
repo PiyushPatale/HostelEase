@@ -1,22 +1,23 @@
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/navbar.css";
 import logo from "../assets/images/iiitg-logo.png";
+import toast, { Toaster } from 'react-hot-toast';
 
 const Navbar = ({ user, setUser }) => {
   const navigate = useNavigate();
   // const user = JSON.parse(localStorage.getItem("user")) || null;
 
-  console.log(user);
+  // console.log(user);
   
   const handleProfileClick = () => {
     if (!user) {
       navigate("/login");
     } else if (user.email === "admin@iiitg.ac.in") {
-      console.log("Yess");
+      // console.log("Yess");
       navigate("/adminprofile");
     } else {
-      console.log("No");
-      console.log("Navigating to User Profile");
+      // console.log("No");
+      // console.log("Navigating to User Profile");
       navigate("/profile");
     }
   };
@@ -25,7 +26,7 @@ const Navbar = ({ user, setUser }) => {
     if (!user) {
       navigate("/");
     } else if (user.email === "admin@iiitg.ac.in") {
-      navigate("/adminprfile"); // Changed to admin
+      navigate("/adminprofile"); // Changed to admin
     } else {
       navigate("/home");
     }
@@ -33,6 +34,8 @@ const Navbar = ({ user, setUser }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    toast.success("Logout Successful");
     setUser(null); // Ensure state updates
     navigate("/login");
   };

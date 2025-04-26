@@ -30,6 +30,7 @@
 .logo {
   height: 40px; /* Slightly smaller for better proportion */
   transition: transform 0.3s ease;
+  /* border-radius: 30%; */
 }
 
 .logo:hover {

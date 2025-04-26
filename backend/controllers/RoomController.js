@@ -17,7 +17,7 @@ exports.createRoom = async (req, res) => {
 
       const roomExists = await Room.findOne({ roomNumber: roomNumber.toString() });
       if (roomExists) {
-        console.log(`Room ${roomNumber} already exists. Skipping.`);
+        // console.log(`Room ${roomNumber} already exists. Skipping.`);
         continue;
       }
 
@@ -46,41 +46,50 @@ exports.getAllRooms = async (req, res) => {
 exports.assignStudent = async (req, res) => {
   try {
     const { roomNumber, rollNumber } = req.body;
-    console.log(roomNumber.toString());
+
+    const targetRoom = String(roomNumber).trim();
+
     // const room = await Room.findOne({ roomNumber: roomNumber.toString() });
     const allRooms = await Room.find({});
-    const room = allRooms.find(
-      (r) => String(r.roomNumber).trim().toUpperCase()
-    );
-    console.log(room);
-    
-
+        const room = allRooms.find(
+          (room) => String(room.roomNumber).trim() === targetRoom
+        );
     if (!room) return res.status(404).json({ message: "Room not found" });
 
     const student = await User.findOne({ rollNumber });
     if (!student) return res.status(404).json({ message: "Student not found" });
 
+    if (room.students.includes(student._id)) {
+      return res.status(400).json({ message: "Student already assigned to this room" });
+    }
+
     if (room.students.length >= 2)
       return res.status(400).json({ message: "Room is full" });
 
-    if (!student._id) {
-      return res.status(500).json({ message: "Student ID is missing!" });
-    }
-
     room.students.push(student._id);
     await room.save();
-    res.json(room);
+
+    student.roomNumber = room.roomNumber;
+    await student.save();
+
+    res.json({ message: "Student assigned successfully", room });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
+
 // Remove student from a room
 exports.removeStudent = async (req, res) => {
   try {
     const { roomNumber, rollNumber } = req.body;
-    const room = await Room.findOne({ roomNumber: roomNumber.toString() });
 
+    const targetRoom = String(roomNumber).trim();
+
+    const allRooms = await Room.find({});
+        const room = allRooms.find(
+          (room) => String(room.roomNumber).trim() === targetRoom
+        );
     if (!room) return res.status(404).json({ message: "Room not found" });
 
     const student = await User.findOne({ rollNumber });
@@ -92,11 +101,16 @@ exports.removeStudent = async (req, res) => {
 
     room.students = room.students.filter(id => id.toString() !== student._id.toString());
     await room.save();
+
+    student.roomNumber = null;
+    await student.save();
+
     res.json({ message: "Student removed successfully", room });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // Get all vacant rooms
 exports.getVacantRooms = async (req, res) => {
@@ -108,20 +122,6 @@ exports.getVacantRooms = async (req, res) => {
   }
 };
 
-// Get all occupied rooms
-// exports.getOccupiedRooms = async (req, res) => {
-//   try {
-//     const occupiedRooms = await Room.find({ students: { $ne: [] } }).populate("students", "name rollNumber");
-
-//     if (occupiedRooms.length === 0) {
-//       return res.status(404).json({ message: "No occupied rooms found" });
-//     }
-
-//     res.json(occupiedRooms);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
 exports.getOccupiedRooms = async (req, res) => {
   try {
     const occupiedRooms = await Room.find({

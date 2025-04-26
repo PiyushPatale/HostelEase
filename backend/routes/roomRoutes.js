@@ -5,7 +5,7 @@ const {
   assignStudent,
   removeStudent,
   getVacantRooms,
-  getOccupiedRooms
+  getOccupiedRooms,
 } = require("../controllers/RoomController");
 
 const { protect, adminOnly } = require("../middleware/authMiddleware");
@@ -17,7 +17,7 @@ router.get("/", getAllRooms);
 router.put("/assign", protect, adminOnly, assignStudent); 
 router.put("/remove", protect, adminOnly, removeStudent); 
 router.get("/vacant", getVacantRooms); 
-router.get("/occupied", getOccupiedRooms); 
+router.get("/occupied", getOccupiedRooms);
 
 
 module.exports = router;

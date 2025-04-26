@@ -13,19 +13,8 @@ exports.protect = async (req, res, next) => {
   }
 
   try {
-    // const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // req.user = await User.findById(decoded.id).select("-password");
-    // next();
-    // console.log(process.env.JWT_SECRET);
-    console.log("1 ->");
-    console.log(JWT_SECRET);
     
     const decoded = jwt.verify(token, JWT_SECRET);
-    
-    console.log("2 ->");
-    console.log("Role" + decoded.role);
-    
-    // If admin login, set user role directly
     if (decoded.role === "admin") {
       req.user = { role: "admin" };
     } else {

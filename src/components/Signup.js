@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/signup.css";
 import styled from 'styled-components';
-import { toast, ToastContainer } from "react-toastify";
-import signupBg from "../assets/images/signup-bg.jpg"
+import toast, { Toaster } from 'react-hot-toast';
+import signupBg from "../assets/images/signup.png"
 const { PUBLIC_SERVER_URL } = require("./api");
 
 const host=PUBLIC_SERVER_URL
@@ -19,9 +19,41 @@ const Signup = () => {
   });
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = async (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  
+    if (name === "roomNumber") {
+      const formattedRoom = value.toUpperCase();
+  
+      if (/^([A-Z]-?\d{3}|\d{3})$/.test(formattedRoom)) {  // only check valid pattern
+        checkRoomAvailability(formattedRoom);
+      }
+    }
   };
+  
+  const checkRoomAvailability = async (roomNumber) => {
+    try {
+      const response = await fetch(`${host}/api/rooms/vacant`);
+      const vacantRooms = await response.json();
+  
+      const roomExists = vacantRooms.some(
+        room => room.roomNumber.toUpperCase() === roomNumber
+      );
+  
+      if (!roomExists) {
+        toast.error(`Room ${roomNumber} is already occupied!`, { autoClose: 3000 });
+      }
+    } catch (err) {
+      toast.error("Could not check room availability.");
+    }
+  };
+
+  useEffect(() => {
+    if (formData.roomNumber.match(/^([A-Za-z]-?\d{3}|\d{3})$/)) {
+      checkRoomAvailability(formData.roomNumber);
+    }
+  }, [formData.roomNumber]);
 
   const validateForm = () => {
     const { email, rollNumber, roomNumber, mobileNumber } = formData;
@@ -37,7 +69,7 @@ const Signup = () => {
     }
 
     if (roomNumber && !/^([A-Z]-?\d{3}|\d{3})$/.test(roomNumber.toUpperCase())) {
-      toast.error("Room number must be like 101, G-101, or A101");
+      toast.error("Room number must be like 101, G-101, or A-101, or B-101");
       return false;
     }
 
@@ -83,6 +115,7 @@ const Signup = () => {
 
   return (
     <div className="signup-container " style={{ backgroundImage: `url(${signupBg})` }}>
+        <Toaster position="top-center" reverseOrder={false} />
         <div className="container">
         <h2 >SIGNUP</h2>
         <form onSubmit={handleSignup}>
@@ -118,16 +151,6 @@ const Signup = () => {
                 <label>Password</label>
             </div>
             </StyledWrapper>
-
-            {/* <StyledWrapper>
-            <div className="group">
-                <input required type="text" name="roomNumber" className="input" onChange={handleChange} pattern="^([A-Za-z]-?\d{3}|\d{3})$"
-                title="Format: 101 or G-101 (3 digits required)" />
-                <span className="highlight" />
-                <span className="bar" />
-                <label>Room Number</label>
-            </div>
-            </StyledWrapper> */}
             <StyledWrapper>
             <div className="group">
               <input
@@ -161,7 +184,6 @@ const Signup = () => {
             <input type="text" name="rollNumber" placeholder="Roll Number" onChange={handleChange} required /> */}
             <button type="submit">Signup</button>
         </form>
-        <ToastContainer position="top-center" autoClose={3000} />
         </div>
     </div>
   );

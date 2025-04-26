@@ -2,8 +2,10 @@ import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/home.css";
 import bgImage from "../assets/images/home-bg.jpg";
-import logo from "../assets/images/iiitg-logo.png";
+// import logo from "../assets/images/iiitg-logo.png";
 import toast, { Toaster } from 'react-hot-toast';
+import { FaArrowRight } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -39,17 +41,33 @@ const Home = () => {
     >
       <Toaster position="top-center" reverseOrder={false} /> 
       {/* Info Section */}
-      <div className="info-box">
-        <h2>Welcome to IIIT Guwahati Hostel Management</h2>
-        <p>
-          A modern hostel management system designed for IIIT Guwahati students.
-          Manage room allocations, student details, and more efficiently.
-        </p>
-        <button className="explore-btn" onClick={handleExplore}>
-          Explore Now
-        </button>
-      </div>
+      <motion.div 
+        className="hero-section"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+      >
+        <div className="info-box-home">
+          <h1>Welcome to <span>IIITG Hostel Management</span></h1>
+          <p className="subtitle">
+            A modern, efficient system designed to streamline hostel operations and enhance student living experience at IIIT Guwahati.
+          </p>
+          <button className="explore-btn" onClick={handleExplore}>
+            Explore Now <FaArrowRight className="btn-icon" />
+          </button>
+        </div>
+      </motion.div>
+
+      <footer className="footer">
+        <p>© Created By Piyush B. Patale under guidance of Dr. Rakesh Matam {new Date().getFullYear()} IIIT Guwahati Hostel Management System</p>
+        {/* <div className="footer-links">
+          <Link to="/about">About</Link>
+          <Link to="/contact">Contact</Link>
+          <Link to="/privacy">Privacy Policy</Link>
+        </div> */}
+      </footer>
     </div>
+    
   );
 };
 
