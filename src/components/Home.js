@@ -27,10 +27,8 @@ const Home = () => {
   useEffect(() => {
     const loginSuccess = localStorage.getItem("showLoginSuccess");
     if (loginSuccess === "true") {
-      setTimeout(() => {
-        toast.success("Login successful!");
+        // toast.success("Login successful!");
         localStorage.removeItem("showLoginSuccess");
-      }, 300); // wait for ToastContainer to mount
     }
   }, []);
 
