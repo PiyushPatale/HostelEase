@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Room = require("../models/Room");
 const multer = require("multer");
-const csv = require("csv-parser");
+const csvParser = require("csv-parser"); 
 const fs = require("fs");
 const path = require("path");
 
@@ -22,7 +22,7 @@ const storage = multer.diskStorage({
 });
 
 // upload = multer({ storage: storage });
-const upload = multer({ storage });
+const upload = multer({ storage: multer.memoryStorage() }); 
 
 
 router.post("/signup", async (req, res) => {
@@ -152,96 +152,198 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+// router.post("/signup-csv", upload.single("file"), async (req, res) => {
+//   const filePath = req.file.path;
+//   const results = [];
+
+//   fs.createReadStream(filePath)
+//     .pipe(csv())
+//     .on("data", (data) => results.push(data))
+//     .on("end", async () => {
+//       const addedStudents = [];
+//       const errors = [];
+
+//       for (const student of results) {
+//         const { name, email, password, roomNumber, mobileNumber, rollNumber } = student;
+
+//         try {
+//           if (!email.endsWith("@iiitg.ac.in")) {
+//             errors.push({ name, email, message: "Invalid email format" });
+//             continue;
+//           }
+
+//           let existingUser = await User.findOne({ email });
+//           if (existingUser) {
+//             errors.push({ name, email, message: "User already exists" });
+//             continue;
+//           }
+
+//           let room = null;
+//           if (roomNumber) {
+//             let normalizedRoomNumber = String(roomNumber).trim().toUpperCase();
+//             if (/^[A-Z]\d+$/.test(normalizedRoomNumber)) {
+//               normalizedRoomNumber = normalizedRoomNumber.replace(/([A-Z])(\d+)/, "$1-$2");
+//             }
+
+//             const allRooms = await Room.find({});
+//             room = allRooms.find(r => String(r.roomNumber).trim().toUpperCase() === normalizedRoomNumber);
+
+//             if (!room) {
+//               errors.push({
+//                 name,
+//                 roomNumber,
+//                 message: `Room ${roomNumber} does not exist`,
+//               });
+//               continue;
+//             }
+
+//             if (room.students.length >= 2) {
+//               errors.push({
+//                 name,
+//                 roomNumber,
+//                 message: `Room ${roomNumber} is full`,
+//               });
+//               continue;
+//             }
+//           }
+
+//           const hashedPassword = await bcrypt.hash(password, 10);
+
+//           const newUser = new User({
+//             name,
+//             email,
+//             password: hashedPassword,
+//             roomNumber: room ? room.roomNumber : undefined,
+//             mobileNumber,
+//             rollNumber,
+//           });
+
+//           await newUser.save();
+
+//           if (room) {
+//             room.students.push(newUser._id);
+//             await room.save();
+//           }
+
+//           addedStudents.push({ name, email });
+//         } catch (err) {
+//           console.error("Error adding student:", student, err);
+//           errors.push({ name, email, message: "Unexpected server error" });
+//         }
+//       }
+
+//       // Delete uploaded file after processing
+//       fs.unlink(filePath, () => {});
+
+//       res.status(200).json({
+//         message: "CSV Processed",
+//         addedStudents,
+//         errors,
+//       });
+//     });
+// });
+
+
 router.post("/signup-csv", upload.single("file"), async (req, res) => {
-  const filePath = req.file.path;
-  const results = [];
+  try {
+    const results = [];
 
-  fs.createReadStream(filePath)
-    .pipe(csv())
-    .on("data", (data) => results.push(data))
-    .on("end", async () => {
-      const addedStudents = [];
-      const errors = [];
+    const stream = require('stream');
+    const bufferStream = new stream.PassThrough();
+    bufferStream.end(req.file.buffer);
 
-      for (const student of results) {
-        const { name, email, password, roomNumber, mobileNumber, rollNumber } = student;
+    bufferStream
+      .pipe(csvParser())
+      .on("data", (data) => results.push(data))
+      .on("end", async () => {
+        const addedStudents = [];
+        const errors = [];
 
-        try {
-          if (!email.endsWith("@iiitg.ac.in")) {
-            errors.push({ name, email, message: "Invalid email format" });
-            continue;
-          }
+        for (const student of results) {
+          const { name, email, password, roomNumber, mobileNumber, rollNumber } = student;
 
-          let existingUser = await User.findOne({ email });
-          if (existingUser) {
-            errors.push({ name, email, message: "User already exists" });
-            continue;
-          }
-
-          let room = null;
-          if (roomNumber) {
-            let normalizedRoomNumber = String(roomNumber).trim().toUpperCase();
-            if (/^[A-Z]\d+$/.test(normalizedRoomNumber)) {
-              normalizedRoomNumber = normalizedRoomNumber.replace(/([A-Z])(\d+)/, "$1-$2");
-            }
-
-            const allRooms = await Room.find({});
-            room = allRooms.find(r => String(r.roomNumber).trim().toUpperCase() === normalizedRoomNumber);
-
-            if (!room) {
-              errors.push({
-                name,
-                roomNumber,
-                message: `Room ${roomNumber} does not exist`,
-              });
+          try {
+            if (!email.endsWith("@iiitg.ac.in")) {
+              errors.push({ name, email, message: "Invalid email format" });
               continue;
             }
 
-            if (room.students.length >= 2) {
-              errors.push({
-                name,
-                roomNumber,
-                message: `Room ${roomNumber} is full`,
-              });
+            let existingUser = await User.findOne({ email });
+            if (existingUser) {
+              errors.push({ name, email, message: "User already exists" });
               continue;
             }
+
+            let room = null;
+            if (roomNumber) {
+              let normalizedRoomNumber = String(roomNumber).trim().toUpperCase();
+              if (/^[A-Z]\d+$/.test(normalizedRoomNumber)) {
+                normalizedRoomNumber = normalizedRoomNumber.replace(/([A-Z])(\d+)/, "$1-$2");
+              }
+
+              const allRooms = await Room.find({});
+              room = allRooms.find(r => String(r.roomNumber).trim().toUpperCase() === normalizedRoomNumber);
+
+              if (!room) {
+                errors.push({
+                  name,
+                  roomNumber,
+                  message: `Room ${roomNumber} does not exist`,
+                });
+                continue;
+              }
+
+              if (room.students.length >= 2) {
+                errors.push({
+                  name,
+                  roomNumber,
+                  message: `Room ${roomNumber} is full`,
+                });
+                continue;
+              }
+            }
+
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            const newUser = new User({
+              name,
+              email,
+              password: hashedPassword,
+              roomNumber: room ? room.roomNumber : undefined,
+              mobileNumber,
+              rollNumber,
+            });
+
+            await newUser.save();
+
+            if (room) {
+              room.students.push(newUser._id);
+              await room.save();
+            }
+
+            addedStudents.push({ name, email });
+          } catch (err) {
+            console.error("Error adding student:", student, err);
+            errors.push({ name, email, message: "Unexpected server error" });
           }
-
-          const hashedPassword = await bcrypt.hash(password, 10);
-
-          const newUser = new User({
-            name,
-            email,
-            password: hashedPassword,
-            roomNumber: room ? room.roomNumber : undefined,
-            mobileNumber,
-            rollNumber,
-          });
-
-          await newUser.save();
-
-          if (room) {
-            room.students.push(newUser._id);
-            await room.save();
-          }
-
-          addedStudents.push({ name, email });
-        } catch (err) {
-          console.error("Error adding student:", student, err);
-          errors.push({ name, email, message: "Unexpected server error" });
         }
-      }
 
-      // Delete uploaded file after processing
-      fs.unlink(filePath, () => {});
-
-      res.status(200).json({
-        message: "CSV Processed",
-        addedStudents,
-        errors,
+        res.status(200).json({
+          message: "CSV Processed",
+          addedStudents,
+          errors,
+        });
+      })
+      .on("error", (err) => {
+        console.error("CSV Parsing Error:", err);
+        res.status(500).json({ message: "Failed to parse CSV file" });
       });
-    });
+  } catch (err) {
+    console.error("CSV Upload Error:", err);
+    res.status(500).json({ message: "Server error while processing CSV" });
+  }
 });
+
 
 router.post("/login", async (req, res) => {
   // console.log("Received Login Request:", req.body);
