@@ -7,17 +7,24 @@ const Navbar = ({ user, setUser }) => {
   const navigate = useNavigate();
   // const user = JSON.parse(localStorage.getItem("user")) || null;
 
-  // console.log(user);
+  // // console.log(user);
   
   const handleProfileClick = () => {
     if (!user) {
       navigate("/login");
     } else if (user.email === "admin@iiitg.ac.in") {
-      // console.log("Yess");
+      // // console.log("Yess");
       navigate("/adminprofile");
-    } else {
-      // console.log("No");
-      // console.log("Navigating to User Profile");
+    }else if (user.email === "boysadmin@iiitg.ac.in") {
+      // // console.log("Yess");
+      navigate("/boysadminprofile");
+    }else if (user.email === "girlsadmin@iiitg.ac.in") {
+      // // console.log("Yess");
+      navigate("/girlsadminprofile");
+    }
+    else {
+      // // console.log("No");
+      // // console.log("Navigating to User Profile");
       navigate("/profile");
     }
   };
@@ -27,7 +34,12 @@ const Navbar = ({ user, setUser }) => {
       navigate("/");
     } else if (user.email === "admin@iiitg.ac.in") {
       navigate("/adminprofile"); // Changed to admin
-    } else {
+    }else if (user.email === "boysadmin@iiitg.ac.in") {
+      navigate("/boysadminprofile"); // Changed to admin
+    }else if (user.email === "girlsadmin@iiitg.ac.in") {
+      navigate("/girlsadminprofile"); // Changed to admin
+    }
+     else {
       navigate("/home");
     }
   };

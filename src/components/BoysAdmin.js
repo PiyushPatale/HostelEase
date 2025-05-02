@@ -21,7 +21,7 @@ import RoomChangeRequests from "./RoomChangeRequests";
 const { PUBLIC_SERVER_URL } = require("./api");
 const host = PUBLIC_SERVER_URL;
 
-const AdminProfile = () => {
+function BoysAdmin() {
   const [admin, setAdmin] = useState(JSON.parse(localStorage.getItem("user")));
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("profile");
@@ -29,7 +29,6 @@ const AdminProfile = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  // const [activeTab, setActiveTab] = useState("dashboard");
 
   const token = localStorage.getItem("token");
 
@@ -74,8 +73,8 @@ const AdminProfile = () => {
   };
 
   useEffect(() => {
-    if (!admin || admin.email !== "admin@iiitg.ac.in") {
-      navigate("/adminprofile");
+    if (!admin || admin.email !== "boysadmin@iiitg.ac.in") {
+      navigate("/boysadminprofile");
     }
   }, [admin, navigate]);
 
@@ -91,8 +90,8 @@ const AdminProfile = () => {
               <div className="avatar-circle">
                 {admin.name ? admin.name.charAt(0).toUpperCase() : "A"}
               </div>
-              <h3>{admin.name || "Admin"}</h3>
-              <p>System Administrator</p>
+              <h3>{admin.name || "Boys Admin"}</h3>
+              <p>Boys Hostel Warden</p>
             </div>
 
             <nav className="admin-menu">
@@ -147,8 +146,14 @@ const AdminProfile = () => {
                     <FaBuilding className="dropdown-icon" /> Annexure-II
                   </button>
                   <button
-                    className="dropdown-item"
-                    onClick={() => navigate("/girls-hostel")}
+                    className="dropdown-item disabled"
+                    onClick={() =>
+                      toast.error(
+                        "Access Denied: Boys Hostel Warden cannot access Girl's Hostel."
+                      )
+                    }
+                    disabled
+                    style={{ opacity: 0.5, cursor: "not-allowed" }}
                   >
                     <FaFemale className="dropdown-icon" /> Girl's Hostel
                   </button>
@@ -156,17 +161,17 @@ const AdminProfile = () => {
               </div>
 
               <button
-                className={activeTab === "settings" ? "active" : ""}
-                onClick={() => setActiveTab("settings")}
-              >
-                <FaCog className="menu-icon" /> Settings
-              </button>
-
-              <button
                 className={activeTab === "requests" ? "active" : ""}
                 onClick={() => setActiveTab("requests")}
               >
                 <FaExchangeAlt className="menu-icon" /> Room Requests
+              </button>
+
+              <button
+                className={activeTab === "settings" ? "active" : ""}
+                onClick={() => setActiveTab("settings")}
+              >
+                <FaCog className="menu-icon" /> Settings
               </button>
             </nav>
           </div>
@@ -220,6 +225,12 @@ const AdminProfile = () => {
                 </div>
               )}
 
+              {activeTab === "requests" && (
+                <div className="requests-section">
+                  <RoomChangeRequests adminType="boys" />
+                </div>
+              )}
+
               {activeTab === "settings" && (
                 <div className="settings-section">
                   <h2>Account Settings</h2>
@@ -254,18 +265,12 @@ const AdminProfile = () => {
                   </div>
                 </div>
               )}
-
-              {activeTab === "requests" && (
-                <div className="requests-section">
-                  <RoomChangeRequests adminType="all" />
-                </div>
-              )}
             </div>
           </div>
         </div>
       </div>
     </>
   );
-};
+}
 
-export default AdminProfile;
+export default BoysAdmin;

@@ -19,7 +19,13 @@ const Home = () => {
 
     if (user?.email === "admin@iiitg.ac.in") {
       navigate("/adminprofile");
-    } else {
+    }else if (user.email === "boysadmin@iiitg.ac.in") {
+      navigate("/boysadminprofile"); // Changed to admin
+    }
+    else if (user.email === "girlsadmin@iiitg.ac.in") {
+      navigate("/girlsadminprofile"); // Changed to admin
+    }
+     else {
       navigate("/");
     }
   };

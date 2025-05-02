@@ -7,7 +7,7 @@ const User = require("../models/User");
 // Delete a student
 router.delete("/:id", async (req, res) => {
 
-  console.log("DELETE /api/students/:id route hit!");
+  // console.log("DELETE /api/students/:id route hit!");
   try {
     const studentId = req.params.id;
     
@@ -37,7 +37,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 router.put("/move/:studentId", (req, res, next) => {
-  // console.log("Route hit! studentId:", req.params.studentId);
+  // // console.log("Route hit! studentId:", req.params.studentId);
   next();
 });
 
@@ -56,7 +56,7 @@ router.put("/move/:studentId", async (req, res) => {
     const targetRoom = String(newRoomNumber).trim();
     const currentRoom = String(student.roomNumber).trim();
 
-    // console.log(`Searching for room: "${targetRoom}"`);
+    // // console.log(`Searching for room: "${targetRoom}"`);
 
     // Step 3: Find the rooms using exhaustive search
     const allRooms = await Room.find({});
@@ -68,11 +68,11 @@ router.put("/move/:studentId", async (req, res) => {
       (room) => String(room.roomNumber).trim() === currentRoom
     );
 
-    // console.log(
+    // // console.log(
     //   "All rooms:",
     //   allRooms.map((r) => r.roomNumber)
     // );
-    // console.log("Found new room:", newRoom ? newRoom.roomNumber : "NOT FOUND");
+    // // console.log("Found new room:", newRoom ? newRoom.roomNumber : "NOT FOUND");
 
     if (!newRoom) {
       // Advanced diagnostics
@@ -142,12 +142,12 @@ router.put("/swap", async (req, res) => {
     const roomANumber = String(studentA.roomNumber).trim();
     const roomBNumber = String(studentB.roomNumber).trim();
 
-    // console.log(`Student A Room: ${roomANumber}`);
-    // console.log(`Student B Room: ${roomBNumber}`);
+    // // console.log(`Student A Room: ${roomANumber}`);
+    // // console.log(`Student B Room: ${roomBNumber}`);
 
     // Find ALL rooms first
     const allRooms = await Room.find({});
-    // console.log(
+    // // console.log(
     //   "All rooms:",
     //   allRooms.map((r) => r.roomNumber)
     // );
@@ -160,8 +160,8 @@ router.put("/swap", async (req, res) => {
       (r) => String(r.roomNumber).trim() === roomBNumber
     );
 
-    // console.log("Found roomA:", roomA ? roomA.roomNumber : "NOT FOUND");
-    // console.log("Found roomB:", roomB ? roomB.roomNumber : "NOT FOUND");
+    // // console.log("Found roomA:", roomA ? roomA.roomNumber : "NOT FOUND");
+    // // console.log("Found roomB:", roomB ? roomB.roomNumber : "NOT FOUND");
 
     if (!roomA || !roomB) {
       return res.status(404).json({
@@ -213,7 +213,7 @@ router.put("/swap", async (req, res) => {
 router.get("/yearwise/:year", async (req, res) => {
   try {
     const { year } = req.params;
-    // console.log(year);
+    // // console.log(year);
     
 
     // Validate year format (must be two digits)

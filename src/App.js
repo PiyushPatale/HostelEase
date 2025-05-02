@@ -22,6 +22,8 @@ import GirlsHostel from "./components/GirlsHostel";
 import HostelGR from "./components/HostelGR";
 import MyRoom from "./components/MyRoom";
 import { ToastContainer } from "react-toastify";
+import BoysAdmin from "./components/BoysAdmin";
+import GirlsAdmin from "./components/GirlsAdmin";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -29,7 +31,7 @@ function App() {
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem("user");
-      // console.log(storedUser);
+      // // console.log(storedUser);
 
       if (storedUser) {
         setUser(JSON.parse(storedUser));
@@ -62,6 +64,28 @@ function App() {
             element={
               user?.email === "admin@iiitg.ac.in" ? (
                 <AdminProfile />
+              ) : (
+                <Navigate to="/admin" />
+              )
+            }
+          />
+
+          <Route
+            path="/boysadminprofile"
+            element={
+              user?.email === "boysadmin@iiitg.ac.in" ? (
+                <BoysAdmin/>
+              ) : (
+                <Navigate to="/admin" />
+              )
+            }
+          />
+
+          <Route
+            path="/girlsadminprofile"
+            element={
+              user?.email === "girlsadmin@iiitg.ac.in" ? (
+                <GirlsAdmin/>
               ) : (
                 <Navigate to="/admin" />
               )

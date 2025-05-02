@@ -78,12 +78,6 @@ const Signup = () => {
       return false;
     }
 
-    const rollSuffix = rollNumber.slice(-3);
-    if (!email.includes(rollSuffix)) {
-      toast.error("Email must include last 3 digits of roll number");
-      return false;
-    }
-
     return true;
   };
 

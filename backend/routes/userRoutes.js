@@ -17,21 +17,21 @@ cloudinary.config({
   api_key: process.env.API_KEY,
   api_secret: process.env.API_SECRET,
 });
-// console.log(process.env.API_KEY);
-// console.log(process.env.CLOUD_NAME);
-// console.log(process.env.API_SECRET);
+// // console.log(process.env.API_KEY);
+// // console.log(process.env.CLOUD_NAME);
+// // console.log(process.env.API_SECRET);
 
 // router.post("/upload/:userId", upload.single("image"), async (req, res) => {
 //   try {
-//     // console.log("File received:", req.file);
+//     // // console.log("File received:", req.file);
 //     const result = await cloudinary.uploader.upload(req.file.path);
-//     // console.log("Cloudinary response:", result);
+//     // // console.log("Cloudinary response:", result);
 //     const user = await User.findByIdAndUpdate(
 //       req.params.userId,
 //       { profileImage: result.secure_url },
 //       { new: true }
 //     );
-//     // console.log("Updated user:", user);
+//     // // console.log("Updated user:", user);
 //     res.json({ imageUrl: user.profileImage });
 //   } catch (error) {
 //     console.error(error);
@@ -43,7 +43,7 @@ cloudinary.config({
 //   try {
 //     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
-//     // console.log("File received:", req.file);
+//     // // console.log("File received:", req.file);
 
 //     const result = await cloudinary.uploader
 //       .upload_stream({ resource_type: "image" }, async (error, result) => {
@@ -52,14 +52,14 @@ cloudinary.config({
 //           return res.status(500).json({ error: "Cloudinary upload failed" });
 //         }
 
-//         // console.log("Cloudinary response:", result);
+//         // // console.log("Cloudinary response:", result);
 //         const user = await User.findByIdAndUpdate(
 //           req.params.userId,
 //           { profileImage: result.secure_url },
 //           { new: true }
 //         );
 
-//         // console.log("Updated user:", user);
+//         // // console.log("Updated user:", user);
 //         res.json({ imageUrl: user.profileImage });
 //       })
 //       .end(req.file.buffer);

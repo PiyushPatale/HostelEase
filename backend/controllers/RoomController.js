@@ -17,7 +17,7 @@ exports.createRoom = async (req, res) => {
 
       const roomExists = await Room.findOne({ roomNumber: roomNumber.toString() });
       if (roomExists) {
-        // console.log(`Room ${roomNumber} already exists. Skipping.`);
+        // // console.log(`Room ${roomNumber} already exists. Skipping.`);
         continue;
       }
 

@@ -4,6 +4,7 @@ const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const roomRoutes = require("./routes/roomRoutes");
 const studentRoutes = require("./routes/studentRoutes");
+const roomChangeRoutes = require("./routes/roomChangeRoutes");
 const cors = require("cors");
 require("dotenv").config();
 
@@ -33,6 +34,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/students", studentRoutes);
+app.use("/api/room", roomChangeRoutes);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => // console.log(`Server running on port ${PORT}`));

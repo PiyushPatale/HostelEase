@@ -35,7 +35,11 @@ const FloorPlan = () => {
   const [studentToSwapWith, setStudentToSwapWith] = useState(null);
 
   const modalRef = useRef();
-  const isAdmin = user?.email === "admin@iiitg.ac.in";
+  // const isAdmin = user?.email === "admin@iiitg.ac.in";
+  const adminEmails = ["admin@iiitg.ac.in", "boysadmin@iiitg.ac.in", "girlsadmin@iiitg.ac.in"];
+  const isAdmin = adminEmails.includes(user?.email);
+
+
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -108,7 +112,7 @@ const FloorPlan = () => {
       }
     );
   
-      console.log("Remove response:", response.data);
+      // console.log("Remove response:", response.data);
   
       
       // After removal, you can update UI as needed (optional)
@@ -133,11 +137,11 @@ const FloorPlan = () => {
 
   
   // const handleDeleteStudent = async (studentId) => {
-  //   console.log("Deleting student directly without confirm...");
+  //   // console.log("Deleting student directly without confirm...");
   
   //   setLoading(true);
   //   try {
-  //     console.log(`${host}/api/students/${studentId}`);
+  //     // console.log(`${host}/api/students/${studentId}`);
   //     await axios.delete(`${host}/api/students/${studentId}`);
   //     setRooms((prevRooms) =>
   //       prevRooms.map((room) => ({
@@ -233,7 +237,7 @@ const FloorPlan = () => {
       return;
     }
 
-    // console.log(selectedRoomForMove);
+    // // console.log(selectedRoomForMove);
 
     try {
       await axios.put(
@@ -253,8 +257,8 @@ const FloorPlan = () => {
 
       setIsMoveModalOpen(false);
       setStudentToMove(null);
-      // console.log(studentToMove.name);
-      // console.log(selectedRoomForMove);
+      // // console.log(studentToMove.name);
+      // // console.log(selectedRoomForMove);
       
       toast.success(`${studentToMove.name} moved to Room ${selectedRoomForMove}`);
     } catch (err) {

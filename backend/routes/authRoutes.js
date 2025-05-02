@@ -7,6 +7,7 @@ const multer = require("multer");
 const csvParser = require("csv-parser"); 
 const fs = require("fs");
 const path = require("path");
+const { protect, adminOnly } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 const JWT_SECRET = "secretkey";
@@ -152,96 +153,40 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-// router.post("/signup-csv", upload.single("file"), async (req, res) => {
-//   const filePath = req.file.path;
-//   const results = [];
+router.post("/change-password", protect, adminOnly, async (req, res) => {
+  const { currentPassword, newPassword, confirmPassword } = req.body;
 
-//   fs.createReadStream(filePath)
-//     .pipe(csv())
-//     .on("data", (data) => results.push(data))
-//     .on("end", async () => {
-//       const addedStudents = [];
-//       const errors = [];
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
 
-//       for (const student of results) {
-//         const { name, email, password, roomNumber, mobileNumber, rollNumber } = student;
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({ message: "New passwords do not match." });
+  }
 
-//         try {
-//           if (!email.endsWith("@iiitg.ac.in")) {
-//             errors.push({ name, email, message: "Invalid email format" });
-//             continue;
-//           }
+  try {
+    const adminEmail = "admin@iiitg.ac.in";
+    const admin = await User.findOne({ email: adminEmail });
 
-//           let existingUser = await User.findOne({ email });
-//           if (existingUser) {
-//             errors.push({ name, email, message: "User already exists" });
-//             continue;
-//           }
+    if (!admin) {
+      return res.status(404).json({ message: "Admin account not found." });
+    }
 
-//           let room = null;
-//           if (roomNumber) {
-//             let normalizedRoomNumber = String(roomNumber).trim().toUpperCase();
-//             if (/^[A-Z]\d+$/.test(normalizedRoomNumber)) {
-//               normalizedRoomNumber = normalizedRoomNumber.replace(/([A-Z])(\d+)/, "$1-$2");
-//             }
+    const isMatch = await bcrypt.compare(currentPassword, admin.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Current password is incorrect." });
+    }
 
-//             const allRooms = await Room.find({});
-//             room = allRooms.find(r => String(r.roomNumber).trim().toUpperCase() === normalizedRoomNumber);
+    admin.password = await bcrypt.hash(newPassword, 10);
+    await admin.save();
 
-//             if (!room) {
-//               errors.push({
-//                 name,
-//                 roomNumber,
-//                 message: `Room ${roomNumber} does not exist`,
-//               });
-//               continue;
-//             }
+    res.status(200).json({ message: "Password changed successfully." });
+  } catch (error) {
+    console.error("Password change error:", error);
+    res.status(500).json({ message: "Server error. Try again." });
+  }
+});
 
-//             if (room.students.length >= 2) {
-//               errors.push({
-//                 name,
-//                 roomNumber,
-//                 message: `Room ${roomNumber} is full`,
-//               });
-//               continue;
-//             }
-//           }
-
-//           const hashedPassword = await bcrypt.hash(password, 10);
-
-//           const newUser = new User({
-//             name,
-//             email,
-//             password: hashedPassword,
-//             roomNumber: room ? room.roomNumber : undefined,
-//             mobileNumber,
-//             rollNumber,
-//           });
-
-//           await newUser.save();
-
-//           if (room) {
-//             room.students.push(newUser._id);
-//             await room.save();
-//           }
-
-//           addedStudents.push({ name, email });
-//         } catch (err) {
-//           console.error("Error adding student:", student, err);
-//           errors.push({ name, email, message: "Unexpected server error" });
-//         }
-//       }
-
-//       // Delete uploaded file after processing
-//       fs.unlink(filePath, () => {});
-
-//       res.status(200).json({
-//         message: "CSV Processed",
-//         addedStudents,
-//         errors,
-//       });
-//     });
-// });
 
 
 router.post("/signup-csv", upload.single("file"), async (req, res) => {
@@ -346,7 +291,7 @@ router.post("/signup-csv", upload.single("file"), async (req, res) => {
 
 
 router.post("/login", async (req, res) => {
-  // console.log("Received Login Request:", req.body);
+  // // console.log("Received Login Request:", req.body);
   const { email, password } = req.body;
 
   if (!email.endsWith("@iiitg.ac.in")) {
@@ -356,24 +301,50 @@ router.post("/login", async (req, res) => {
   }
 
   try {
-    if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: "Invalid credentials" });
+
+    const adminEmails = ["admin@iiitg.ac.in", "boysadmin@iiitg.ac.in", "girlsadmin@iiitg.ac.in"];
+
+    // if (email === process.env.ADMIN_EMAIL) {
+    //   const isAdminMatch = await bcrypt.compare(password, user.password);
+  
+    //   if (!isAdminMatch)
+    //     return res.status(400).json({ message: "Invalid credentials" });
+      
+    //   const adminToken = jwt.sign({ role: "admin" }, JWT_SECRET, {
+    //     expiresIn: "24h",
+    //   });
+
+    //   return res.json({
+    //     user: {
+    //       email: "admin@iiitg.ac.in",
+    //       role: "admin",
+    //     },
+    //     token: adminToken,
+    //     redirectTo: "/adminprofile",
+    //   });
+    // }
+
+    if (adminEmails.includes(email)) {
+      const isAdminMatch = await bcrypt.compare(password, user.password);
+  
+      if (!isAdminMatch)
+        return res.status(400).json({ message: "Invalid credentials" });
+      
       const adminToken = jwt.sign({ role: "admin" }, JWT_SECRET, {
         expiresIn: "24h",
       });
 
       return res.json({
         user: {
-          email: "admin@iiitg.ac.in",
+          email,
           role: "admin",
         },
         token: adminToken,
         redirectTo: "/adminprofile",
       });
     }
-
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
-
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
       return res.status(400).json({ message: "Invalid credentials" });
@@ -384,7 +355,6 @@ router.post("/login", async (req, res) => {
       JWT_SECRET,
       { expiresIn: "5h" }
     );
-    // console.log(token);
 
     res.json({
       user: {
@@ -402,5 +372,7 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
+
+
 
 module.exports = router;
