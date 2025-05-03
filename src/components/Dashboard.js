@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import "../styles/dashboard.css";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
+import { CircularProgressbar } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 const { PUBLIC_SERVER_URL } = require("./api");
 const host = PUBLIC_SERVER_URL;
 
@@ -20,6 +22,7 @@ const Dashboard = () => {
   const [showModal, setShowModal] = useState(false);
   const [parsingStatus, setParsingStatus] = useState("Parsing CSV...");
   const [errorData, setErrorData] = useState(null);
+  const [parsingProgress, setParsingProgress] = useState(0);
 
   const studentsPerPage = 10;
   const token = localStorage.getItem("token");
@@ -68,11 +71,13 @@ const Dashboard = () => {
       if (response.ok) {
         setRoomAssignModal(false);
         fetchUnallottedStudents(); // refresh unallotted list
-        toast.success(`Student ${selectedStudent.name} assigned to room ${selectedStudent.roomNumber} successfully!`);
+        toast.success(
+          `Student ${selectedStudent.name} assigned to room ${selectedStudent.roomNumber} successfully!`
+        );
       } else {
         // const data = await response.json();
         // alert(data.message || "Failed to assign room");
-        toast.error("Failed to Assign Room")
+        toast.error("Failed to Assign Room");
       }
     } catch (error) {
       console.error("Error assigning room:", error);
@@ -140,15 +145,29 @@ const Dashboard = () => {
     setShowModal(true);
     setParsingStatus("Parsing CSV...");
     setErrorData(null);
-
+    setParsingProgress(0);
     const formData = new FormData();
     formData.append("file", file);
 
     try {
+      const progressInterval = setInterval(() => {
+        setParsingProgress(prev => {
+          // Increase by random amount between 1-5% each time
+          const increment = Math.floor(Math.random() * 5) + 1;
+          const newProgress = Math.min(prev + increment, 90); // Don't go past 90%
+          return newProgress;
+        });
+      }, 300);
+
       const response = await fetch(`${host}/api/auth/signup-csv`, {
         method: "POST",
         body: formData,
       });
+
+      clearInterval(progressInterval);
+    
+      // Immediately set to 100% when done
+      setParsingProgress(100);
 
       const text = await response.text();
       try {
@@ -172,6 +191,7 @@ const Dashboard = () => {
     } catch (error) {
       console.error("CSV Upload Error:", error);
       setParsingStatus("Upload failed. Please try again.");
+      setParsingProgress(0);
     }
   };
 
@@ -185,7 +205,7 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      <Toaster position="top-center" reverseOrder={false} /> 
+      <Toaster position="top-center" reverseOrder={false} />
       <div className="dashboard-content">
         <h1>Admin Dashboard</h1>
         <button className="button" onClick={handleViewStudents}>
@@ -398,6 +418,32 @@ const Dashboard = () => {
         <div className="modal-backdrop">
           <div className="modal">
             <h3>{parsingStatus}</h3>
+            {parsingStatus === "Parsing CSV..." && (
+              <div style={{ width: 100, height: 100, margin: "20px auto" }}>
+                <CircularProgressbar
+                  value={parsingProgress}
+                  text={`${parsingProgress}%`}
+                  styles={{
+                    // Customize the root svg element
+                    // Customize the path (the actual progress bar)
+                    path: {
+                      stroke: `rgba(62, 152, 199, ${0.7})`,
+                      strokeLinecap: "butt",
+                      transition: "stroke-dashoffset 0.5s ease 0s",
+                    },
+                    // Customize the circle behind the path
+                    trail: {
+                      stroke: "#d6d6d6",
+                    },
+                    // Customize the text
+                    text: {
+                      fill: "#333",
+                      fontSize: "16px",
+                    },
+                  }}
+                />
+              </div>
+            )}
 
             {errorData && errorData.length > 0 && (
               <>
